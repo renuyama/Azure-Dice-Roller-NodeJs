@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Dice API Smoke Tests</title>
+</head>
+<body>
+    <h2>Dice API Smoke Tests</h2>
+
+    <div>
+        <label>Sides:
+            <input id="sides" type="number" value="6" min="2">
+        </label>
+        <label>Count:
+            <input id="count" type="number" value="2" min="1">
+        </label>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <button onclick="testPing()">Ping</button>
+        <button onclick="testRoll()">Roll</button>
+        <button onclick="testRollNoCors()">Roll No CORS</button>
+    </div>
+
+    <pre id="result"></pre>
+
+    <script>
+        async function testPing() {
+            const res = await fetch('/api/ping');
+            document.getElementById('result').textContent =
+                JSON.stringify(await res.json(), null, 2);
+        }
+
+        async function testRoll() {
+            const s = document.getElementById('sides').value;
+            const c = document.getElementById('count').value;
+
+            const res = await fetch(`/api/roll?sides=${s}&count=${c}`);
+            document.getElementById('result').textContent =
+                JSON.stringify(await res.json(), null, 2);
+        }
+
+        async function testRollNoCors() {
+            const s = document.getElementById('sides').value;
+            const c = document.getElementById('count').value;
+
+            try {
+                const res = await fetch(`/api/roll-nocors?sides=${s}&count=${c}`);
+                document.getElementById('result').textContent =
+                    JSON.stringify(await res.json(), null, 2);
+            } catch (e) {
+                document.getElementById('result').textContent =
+                    'CORS failure expected: ' + e;
+            }
+        }
+    </script>
+</body>
+</html>
